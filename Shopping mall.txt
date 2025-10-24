@@ -1,0 +1,498 @@
+
+import mysql.connector
+import random
+
+# Connecting mysql with python
+
+mydb = mysql.connector.connect(host="localhost",user="root",password="")
+if mydb.is_connected():
+    print("Connection is established!!!")
+else:
+    print("Connection Error! Kindly check!!!")
+
+mycursor = mydb.cursor()
+
+
+def C_DATABASE():   
+    try:
+        dn=input("Enter Database Name=")
+        mycursor.execute("create database{}".format(dn))
+        mycursor.execute("use {}".format(dn))
+        print("Database created successfully")
+    except Exception as e:
+        print("Database Error",e)
+
+
+def PROD_TABLE():
+     mycursor.execute("use {}".format("SHOPPING_MALL"))
+     try:
+        mycursor.execute("CREATE TABLE {}(PRODUCT_ID VARCHAR(10) PRIMARY KEY,"
+                         "PRODUCT_NAME VARCHAR(20),QUANTITY INT,PRICE INT,"
+                         "DISCOUNT INT);".format("PRODUCT_TABLE"))
+        print("Table created successfully")
+     except Exception as e:
+        print("Database Error",e)
+
+def CUSTOMER_TABLE():
+     mycursor.execute("use {}".format("SHOPPING_MALL"))
+     try:
+        mycursor.execute("CREATE TABLE {}(CUSTOMER_ID VARCHAR(10) PRIMARY KEY,"
+                         "CUSTOMER_NAME VARCHAR(20),ADDRESS VARCHAR(30),"
+                         "PHONE_NO CHAR(10),JOINING_DATE DATE);".format("CUSTOMER_TABLE"))
+        print("Table created successfully")
+     except Exception as e:
+        print("Database Error",e)
+
+def BILL_TABLE():
+     mycursor.execute("use {}".format("SHOPPING_MALL"))
+     try:
+        mycursor.execute("CREATE TABLE {}(BILL_NO VARCHAR(10) PRIMARY KEY,"
+                         "CUSTOMER_NAME VARCHAR(20), PRODUCT_NAME VARCHAR(20),"
+                         "QUANTITY INT,PRICE INT,DISCOUNT INT);".format("BILL_TABLE"))
+        print("Table created successfully")
+     except Exception as e:
+        print("Database Error",e)
+
+def I_RECORD_P():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        while True:
+            A = input("Enter Product ID:")
+            B = input("Enter product name:")
+            global qnt
+            qnt = int(input("Enter product quantity:"))
+            D = int(input("Enter the price of the product: "))
+            E = int(input("Enter discount(%): "))
+            mycursor.execute("insert into PRODUCT_TABLE values('{}','{}',{},{},{});".format(A,B,qnt,D,E))
+            mydb.commit()
+            choice = input("Do you want to add more records<y/n>= ")
+            if choice in "Nn":
+                break
+        print("Records inserted successfully....")
+    except Exception as e:
+        print("Database error:",e)
+
+def I_RECORD_C():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        A = input("Enter Customer ID:")
+        B = input("Enter Customer name:")
+        C = input("Enter address of the Customer:")
+        while True:
+           
+            D = input("Enter the phone no of the Customer:")
+            F= len(D)
+            if F == 10:
+                E = input("Enter joining date(YYYY-MM-DD):")
+                AC=A.upper()
+                mycursor.execute("insert into CUSTOMER_TABLE values('{}','{}','{}','{}','{}');".format(AC,B,C,D,E))
+                mydb.commit()
+                print("Records inserted successfully....")
+            else:
+                print("Enter valid phone no(only 10 digits)!!!")
+                continue
+            choice = input("Do you want to add more records<y/n>= ")
+            if choice in "Nn":
+                break
+    except Exception as e:
+        print("Database error:",e)
+
+
+def I_RECORD_B():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        while True:
+            A = int(input("Enter the bill no:"))
+            B = input("Enter customer name:")
+            C = input("Enter product name:")
+            D = int(input("Enter the quantity of the product:"))
+            E = int(input("Enter the price of the product:"))
+            F = int(input("Enter discount(%):"))
+            mycursor.execute("insert into BILL_TABLE values({},'{}','{}',{},{},{});".format(A,B,C,D,E,F))
+            mydb.commit()
+            choice = input("Do you want to add more records<y/n>= ")
+            if choice in "Nn":
+                break
+        print("Records inserted successfully....")
+    except Exception as e:
+        print("Database error:",e)
+
+
+def U_RECORD_P():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        A = input("Enter Product ID:")
+         
+        choice= input(" what do you want to update-(quantity/price/discount):")
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        if choice in ("quantity","QUANTITY","Q","q","Quantity"):
+            B = int(input("Enter product quantity:"))
+            mycursor.execute("UPDATE PRODUCT_TABLE SET QUANTITY={} WHERE PRODUCT_ID='{}';".format(B,A))
+            print("Quantity UPDATED successfully....")
+        elif choice in ("NAME","name","n","N","Name"):
+            E = input("Enter Product Name:")
+            mycursor.execute("UPDATE PRODUCT_TABLE SET PRODUCT_NAME='{}' WHERE PRODUCT_ID='{}';".format(E,A))
+            print("Name UPDATED successfully....")
+        elif choice in ("PRICE","price","p","P","Price"):
+            C = int(input("Enter the price of the product:"))
+            mycursor.execute("use {}".format("SHOPPING_MALL"))
+            mycursor.execute("UPDATE PRODUCT_TABLE SET PRICE={} WHERE PRODUCT_ID='{}';".format(C,A))
+            print("Price UPDATED successfully....")
+        elif choice in ("DISCOUNT","discount","d","D","Discount"):
+            D = int(input("Enter discount(%):"))
+            mycursor.execute("UPDATE PRODUCT_TABLE SET DISCOUNT={} WHERE PRODUCT_ID='{}';".format(D,A))
+            print("Discount UPDATED successfully....")
+        else:
+            print("Please enter the correct choice")
+        mydb.commit()
+    except Exception as e:
+        print("Database Error:",e)
+
+def U_RECORD_C():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        A = input("Enter Customer ID:")
+        choice= input("What do you want to update-(name/address/phone no):")
+        if choice in ("name","NAME","n","N","Name"):
+            B = input("Enter the updated Customer name:")
+            mycursor.execute("UPDATE CUSTOMER_TABLE SET CUSTOMER_NAME='{}' WHERE CUSTOMER_ID='{}';".format(B,A))
+            print("Name UPDATED successfully....")
+        elif choice in ("Address","ADDRESS","A","a","address"):
+            C = input("Enter Customer's new Address:")
+            mycursor.execute("UPDATE CUSTOMER_TABLE SET ADDRESS='{}' WHERE CUSTOMER_ID='{}';".format(C,A))
+            print("Address UPDATED successfully....")
+        elif choice in ("PHONE NO","phone no","p","P","Phone no"):
+            D = input("Enter Customer's new Phone No.:")
+            mycursor.execute("UPDATE CUSTOMER_TABLE SET PHONE_NO='{}' WHERE CUSTOMER_ID='{}';".format(D,A))
+            print("Phone no UPDATED successfully....")
+        else:
+            print("Please enter the correct choice")
+        mydb.commit()
+    except Exception as e:
+        print("Database Error:",e)
+
+    
+
+def D_RECORD_P():
+    z = input("Enter the Product ID to be deleted:")
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        mycursor.execute("delete  FROM PRODUCT_TABLE where PRODUCT_ID = '{}';".format(z))
+        print("Product deleted successfully!!!")
+        mydb.commit()
+    except Exception as e:
+        print("Database Error:",e)
+
+        
+def DISPLAY_RECORD_P():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        mycursor.execute("SELECT *FROM {};".format('PRODUCT_TABLE'))
+        data = mycursor.fetchall()
+        print("Total Records Fetched: ",data)
+    except Exception as e:
+         print("Database Error:",e)
+
+def SHOW_C():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        mycursor.execute("SELECT *FROM {};".format('CUSTOMER_TABLE'))
+        data = mycursor.fetchall()
+        for i in data:
+            for j in i:
+                print("    ",j,"\t",end=" ")
+            print("\n")        
+    except Exception as e:
+         print("Database Error:",e)
+
+def SEARCH_C():
+    while True:
+        z = input("Enter the CUSTOMER ID to be searched:")
+        x="please enter a valid id!!!"
+        try:
+            mycursor.execute("use {}".format('SHOPPING_MALL'))
+        
+            mycursor.execute("SELECT * FROM CUSTOMER_TABLE where CUSTOMER_ID= '{}'".format(z))
+            global dat
+            dat = mycursor.fetchall()
+            if z in dat[0]:
+                print(dat)
+                break
+            else:
+                print(x)
+                continue
+        except Exception as e:
+            print(x)
+        
+def D_RECORD_C():
+    z = input("Enter the Customer ID to be deleted:")
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        mycursor.execute("delete  FROM CUSTOMER_TABLE where CUSTOMER_ID = '{}';".format(z))
+        print("Product deleted successfully!!!")
+        mydb.commit()
+    except Exception as e:
+        print("Database Error:",e)    
+
+         
+def DISPLAY_P():
+    try:
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        mycursor.execute("SELECT *FROM {};".format('PRODUCT_TABLE'))
+        data = mycursor.fetchall()
+        for i in data:
+            for j in i:
+                print("    ",j,"\t",end=" ")
+            print("\n")
+                
+        
+    except Exception as e:
+         print("Database Error:",e)
+
+
+from datetime import*         
+def CREATE_BILL():
+    global dic
+    dic={}
+    while True:
+        
+        z= input("Enter the CUSTOMER ID:")
+        zc=z.upper()
+        mycursor.execute("use {}".format("SHOPPING_MALL"))
+        mycursor.execute("SELECT * FROM CUSTOMER_TABLE ")
+        dat = mycursor.fetchall()
+        
+        for i in dat:
+            if zc not in i:
+                print("This customer doesn't exists please register it below:")
+                I_RECORD_C()
+                continue
+        
+            else:
+        
+                while True:
+                    a=random.randint(100000,999999)
+        
+                    global p
+                    global q
+                    global k
+                    p=input("ENTER PRODUCT ID:")
+                    q=int(input("QUANTITY:"))
+                    k = input("Do you want to buy more product <y/n>= ")
+                    dic.update({p:q})
+                    global key
+                    global value
+            
+                    key = dic.keys()
+                    value = dic.values()
+       
+                    if k in ("yY"):
+                        continue
+                    else:
+            
+                        print(dic)
+                        mycursor.execute("use {}".format("SHOPPING_MALL"))
+                        mycursor.execute("SELECT QUANTITY FROM PRODUCT_TABLE where PRODUCT_ID='{}';".format(p))
+                        qnty = mycursor.fetchone()
+                        if q <= qnty[0]:
+        
+
+                            print("*"*90)
+                            print("\t\t\tTHE GREAT INDIAN MALL \n \t\t\tINDIRA NAGAR LUCKNOW ")
+                            print("\t\t#Favourite Brands And Hottest Trends #")
+                            print("*"*90)
+                            print("\t\t\tINVOICE NO:",a)
+
+                            today = date.today()
+                            d1 = today.strftime("%d/%m/%Y")
+                            now = datetime.now()
+                            a = now.strftime("%H:%M:%S")
+                            print( d1,"\t\t\t\t\t\t\t",a)
+                            print("*"*90)
+           
+                            try:
+                                mycursor.execute("use {}".format("SHOPPING_MALL"))
+                                mycursor.execute("SELECT CUSTOMER_ID,CUSTOMER_NAME,ADDRESS,PHONE_NO FROM CUSTOMER_TABLE where CUSTOMER_ID='{}';".format(z))
+                                data = mycursor.fetchall()
+            
+                                for i in data:
+                                    print("    ","CUSTOMER_ID:",i[0],"\t")
+                                    print("    ","CUSTOMER_NAME:",i[1],"\t")
+                                    print("    ","ADDRESS:",i[2],"\t")
+                                    print("    ","PHONE_NO:",i[3],"\t")
+                            except Exception as e:
+                                 print("Database Error:",e)    
+                            print("*"*90)
+                            cart()
+                            print(" "*69,"Grand Total:",rty)
+                            print("*"*90)
+                            print("THE GREAT INDIAN MALL")
+                            print("INDIRA NAGAR LUCKNOW")
+                            print("011915221234567")
+                            print("thegreatindianmall@gmail.com")
+                            print("*"*90)
+                            print("\t\t\t THANK YOU!!")
+                            print("\t\t\t SEE YOU SOON ☺")
+                            mycursor.execute("use {}".format("SHOPPING_MALL"))
+                            mycursor.execute("UPDATE PRODUCT_TABLE SET QUANTITY={} where PRODUCT_ID='{}';".format(qnty[0]-q,p))
+                            mydb.commit()
+                            break
+                        else:
+                            print("Your requirement Exceeds the stock limit.\n","Please enter the quantity less than",qnty[0])
+                            continue
+        
+            break
+            
+        break
+           
+        
+
+
+def cart():
+    
+    while True:
+        global rty
+        rty=0
+        
+        print(" PRODUCT ID   ","   PRODUCT NAME   ","QUANTITY       ","PRICE         ","DISCOUNT(%)","       TOTAL   ")
+            
+        for i in key:
+               
+            try:
+                mycursor.execute("use {}".format("SHOPPING_MALL"))
+                mycursor.execute("SELECT PRODUCT_ID,PRODUCT_NAME,PRICE,DISCOUNT FROM PRODUCT_TABLE where PRODUCT_ID='{}';".format(i))
+                data = mycursor.fetchall()
+                mydb.commit()
+                for i in data:
+                     print("    ",i[0],"\t",end="")
+                     print("    ",i[1],"\t",end="")
+                     print("    ",q,"\t",end="")
+                     print("    ",i[2],"\t",end="")
+                     print("    ",i[3],"\t",end="")
+
+                     z=(q*i[2])-((q*i[2]*i[3])/100)
+                     print("  ",z)
+                     rty += z
+                     continue
+                   
+            except Exception as e:
+                
+                print("Database Error:",e)        
+        break    
+
+while True:
+   print("❤"*35)
+   print("\t\t\tTHE GREAT INDIAN MALL")
+   print("\t\t\tINDIRA NAGAR LUCKNOW")
+   print("="*61)
+   print("\t\t\t     MAIN MENU")
+   print("="*61)
+   print("\t\t\t1. PRODUCT MENU")
+   print("\t\t\t2. CUSTOMER MENU")
+   print("\t\t\t3. BILL MENU  ")
+   print("\t\t\t4. SHOW PRODUCT  ")
+   print("\t\t\t5. EXIT          ")
+   print("="*61)
+   c=int(input("Enter your choice:"))
+   print("❤"*46)
+
+
+   if c == 1:
+       print("*" * 80)
+       print("*"," "*31,"PRODUCT MENU"," "*31,"*")
+       print("*"," "*31,"1. ADD PRODUCT"," "*29,"*")
+       print("*"," "*31,"2. MODIFY PRODUCT"," "*26,"*")
+       print("*"," "*31,"3. DELETE PRODUCT"," "*26,"*")
+       print("*"," "*31,"4. MAIN MENU"," "*31,"*")
+       print("*" * 80)
+       ch = int(input("Enter your choice (1 to 4):"))
+       print("*"*80)
+
+       if(ch==1):
+           I_RECORD_P()
+       elif(ch==2):
+           U_RECORD_P()
+       elif(ch==3):
+           D_RECORD_P()
+       elif(ch==4):
+           continue
+
+   elif c == 2:
+       print("*" * 80)
+       print("*"," "*31,"CUSTOMER MENU"," "*30,"*")
+       print("*"," "*31,"1. ADD CUSTOMER"," "*28,"*")
+       print("*"," "*31,"2. MODIFY CUSTOMER"," "*25,"*")
+       print("*"," "*31,"3. DELETE CUSTOMER"," "*25,"*")
+       print("*"," "*31,"4. SHOW CUSTOMER"," "*27,"*")
+       print("*"," "*31,"5. SEARCH CUSTOMER"," "*25,"*")
+       print("*"," "*31,"6. MAIN MENU"," "*31,"*")
+       print("*" * 80)
+       ch = int(input("Enter your choice (1 to 6):"))
+       print("*"*80)
+
+       if(ch==1):
+           I_RECORD_C()
+       elif(ch==2):
+           U_RECORD_C()
+       elif(ch==3):
+           D_RECORD_C()       
+       elif(ch==4):
+           print("*" * 80)
+           print(" "*32,"REGISTERED CUSTOMERS"," "*28)
+           print(" CUSTOMER ID   ","   CUSTOMER NAME     ","ADDRESS         ","PHONE NO             ","JOINING DATE")
+           SHOW_C()
+           ch =input("\nPress any key to return MAIN MENU:")
+           print("*"*80)
+           if(ch==1):
+               continue
+          
+       elif(ch==5):
+           SEARCH_C()
+       
+       elif(ch==6):          
+           continue
+
+   elif c == 3:
+       print("*" * 80)
+       print("*"," "*31,"BILL MENU"," "*34,"*")
+       print("*"," "*31,"1. CREATE BILL"," "*29,"*")
+       print("*"," "*31,"2. MAIN MENU"," "*31,"*")
+       print("*" * 80)
+       ch = int(input("Enter your choice (1 to 2):"))
+       print("*"*80)
+
+       if(ch==1):
+           CREATE_BILL()
+       elif(ch==2):
+           continue
+
+   elif c == 4:
+       print("*" * 80)
+       print(" "*32,"AVAILABLE STOCKS"," "*28)
+       print(" PRODUCT ID   ","   PRODUCT NAME     ","QUANTITY        ","PRICE         ","DISCOUNT(%)")
+       DISPLAY_P()
+       print("*" * 80)
+       ch =input("\nPress any key to return MAIN MENU:")
+       print("*"*80)
+       if(ch==1):
+           continue
+
+   else:
+       print("Enter a valid choice")
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
