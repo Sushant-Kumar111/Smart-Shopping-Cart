@@ -1,6 +1,7 @@
 
 import mysql.connector
 import random
+from chatbot import start_chat
 
 # Connecting mysql with python
 
@@ -391,7 +392,8 @@ while True:
    print("\t\t\t2. CUSTOMER MENU")
    print("\t\t\t3. BILL MENU  ")
    print("\t\t\t4. SHOW PRODUCT  ")
-   print("\t\t\t5. EXIT          ")
+   print("\t\t\t5. CHAT SUPPORT  ")
+   print("\t\t\t6. EXIT          ")
    print("="*61)
    c=int(input("Enter your choice:"))
    print("❤"*46)
@@ -476,6 +478,13 @@ while True:
        print("*"*80)
        if(ch==1):
            continue
+
+   elif c == 5:
+       start_chat()
+
+   elif c == 6:
+       print("Thank you for visiting The Great Indian Mall. Goodbye!")
+       break
 
    else:
        print("Enter a valid choice")
