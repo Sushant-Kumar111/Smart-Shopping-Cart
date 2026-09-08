@@ -1,0 +1,12 @@
+﻿# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Personal/private files
+interview_guide.md
+
+# Environment files
+.env
+*.env
